@@ -1,0 +1,24 @@
+version: '3.8'
+
+services:
+  web:
+    # サービス名
+    container_name: flask_pandas_web
+    
+    # Dockerfile を使用してイメージをビルドする
+    build: .
+    
+    # コンテナのポート5000をホストOSのポート8000にマッピング
+    # 開発用として8000を使用するのが一般的です
+    ports:
+      - "8000:5000"
+      
+    # ボリュームマウント (開発中にホスト側のコードを変更したら即座にコンテナに反映される)
+    # 本番環境ではこの行は削除することが多いです
+    volumes:
+      - .:/app
+      - "/mnt/c/temp_data/base_file_a.csv:/app/data/base_file_a.csv"
+      
+    # 環境変数 (デバッグモードの設定など)
+    environment:
+      - FLASK_ENV=development
