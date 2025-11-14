@@ -9,6 +9,8 @@ FROM python:3.11-slim
 # 作業ディレクトリの設定
 WORKDIR /app
 
+RUN mkdir -p config
+
 # requirements.txt をコンテナにコピーし、ライブラリをインストール
 # アプリケーションコードをコピーする前に依存関係をインストールすることで、
 # コード変更時のビルド高速化 (Dockerキャッシュの活用) を図ります。

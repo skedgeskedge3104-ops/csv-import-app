@@ -8,7 +8,7 @@ app = Flask(__name__)
 # ★ Cドライブから基準ファイルAを読み込むパスを設定 ★
 # WSLの/mnt/c/temp_data/base_file_a.csv にアクセスします。
 # このファイルは、アプリ起動時に読み込まれ、整形処理の基準となります。
-BASE_FILE_PATH = '/mnt/c/temp_data/base_file_a.csv'
+BASE_FILE_PATH = '/app/config/base_file_a.csv'
 
 # 基準となるDataFrameと列リストをグローバルに保持
 try:
@@ -78,41 +78,48 @@ def upload_file():
 
 def reshape_data(df_uploaded: pd.DataFrame) -> pd.DataFrame:
     """
-    アップロードされたDataFrameを、基準の列構成 (BASE_COLUMNS) に合わせて整形するロジック。
+    アップロードされたDataFrame (import_file_df) を使用して、
+    基準DataFrame (base_file_df) の特定の位置の値を置き換えるロジック。
     """
     
-    # 実際のマッピングロジックに合わせて調整してください
-    # 例: アップロードファイルにある列名 -> 基準ファイルAの列名
-    column_mapping = {
-        '顧客ID': 'ID',
-        '商品名': 'Name',
-        '数量': 'Value'
-        # 実際のマッピングをここに追加
-    }
-    
-    # 1. 列名の変更
-    df_reformed = df_uploaded.rename(columns=column_mapping)
+    # ----------------------------------------------------
+    # 1. 基準ファイルA (base_file_df) を再読み込み
+    #    ※ グローバル変数として保持している df_base を使うよりも安全です
+    # ----------------------------------------------------
+    try:
+        # BASE_FILE_PATH はグローバル変数として定義済み
+        base_file_df = pd.read_csv(BASE_FILE_PATH)
+    except Exception as e:
+        # ファイル読み込みエラーが発生した場合のハンドリング
+        raise RuntimeError(f"基準ファイルAの再読み込みに失敗しました: {e}")
 
-    # 2. 必要な列の選択と順序の調整
-    
-    # 基準列に含まれる列を抽出
-    cols_to_keep = [col for col in BASE_COLUMNS if col in df_reformed.columns]
-    
-    # 基準列に存在しないが、アップロードファイルにある列は削除される
-    df_final = df_reformed[cols_to_keep] 
-    
-    # 3. 基準列に存在し、アップロードファイルにない列は空(None)で追加
-    for col in BASE_COLUMNS:
-        if col not in df_final.columns:
-            df_final[col] = None 
-            
-    # 4. 最終的に基準の列順に並べ替える
-    df_final = df_final[BASE_COLUMNS]
+    # ----------------------------------------------------
+    # 2. 変数名の設定 (分かりやすさのため)
+    # ----------------------------------------------------
+    import_file_df = df_uploaded
 
-    # 必要に応じてデータ型変換やクリーニング処理を追加できます
-    # 例: df_final['ID'] = pd.to_numeric(df_final['ID'], errors='coerce')
+    # ----------------------------------------------------
+    # 3. 整形ロジックの実行
+    # base_file_dfの3行目 (インデックス2) 以降のデータを上書きします
+    # ----------------------------------------------------
+    try:
+        # 列のインデックスは 0 から始まることに注意してください
+        # 3列目 (インデックス 3) = '機種' のデータで上書き
+        base_file_df.iloc[2:, 3] = import_file_df['機種']
+        
+        # 4列目 (インデックス 4) = '検定番号' のデータで上書き
+        base_file_df.iloc[2:, 4] = import_file_df['検定番号']
 
-    return df_final
+    except KeyError as e:
+        # インポートしたファイルに必要な列名がない場合のエラーハンドリング
+        raise KeyError(f"インポートファイルに必要な列名が見つかりません: {e}。インポートファイルのヘッダーを確認してください。")
+    except Exception as e:
+        # その他のエラーハンドリング
+        raise RuntimeError(f"データの上書き中に予期せぬエラーが発生しました: {e}")
+
+    # 4. 置き換えが完了したDataFrameを返却
+    #    この結果がそのままCSVとしてダウンロードされます
+    return base_file_df
 
 
 # DockerのCMDでGunicornを使うため、if __name__ == '__main__': は使用しません。

@@ -1,3 +1,4 @@
 Flask
 pandas
 gunicorn  # 本番環境での運用に適したWSGI HTTPサーバー
+openpyxl
