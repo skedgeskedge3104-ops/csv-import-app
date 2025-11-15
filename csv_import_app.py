@@ -8,12 +8,16 @@ app = Flask(__name__)
 # ★ Cドライブから基準ファイルAを読み込むパスを設定 ★
 # WSLの/mnt/c/temp_data/base_file_a.csv にアクセスします。
 # このファイルは、アプリ起動時に読み込まれ、整形処理の基準となります。
+#ローカル用
+# BASE_FILE_PATH = '/app/config/base_file_a.csv'
+
+# デプロイ用
 BASE_FILE_PATH = 'data/base_file_a.csv'
 
 # 基準となるDataFrameと列リストをグローバルに保持
 try:
     # 基準ファイルAを読み込み、列情報のみを取得
-    df_base = pd.read_csv(BASE_FILE_PATH)
+    df_base = pd.read_csv(BASE_FILE_PATH, encoding='utf-8-sig')
     print(f"基準ファイルA ({BASE_FILE_PATH}) を正常に読み込みました。")
 except Exception as e:
     print(f"基準ファイルの読み込み中に予期せぬエラーが発生しました: {e}")
@@ -62,7 +66,7 @@ def upload_file():
             output, 
             mimetype='text/csv', 
             as_attachment=True,
-            download_name='整形済みデータ.csv' 
+            download_name='双葉店.csv' 
         )
         
     except Exception as e:
@@ -117,5 +121,5 @@ def reshape_data(df_uploaded: pd.DataFrame) -> pd.DataFrame:
 
 # DockerのCMDでGunicornを使うため、if __name__ == '__main__': は使用しません。
 # ローカルでテストしたい場合は以下をコメントアウト解除して実行できます。
-# if __name__ == '__main__':
-#     app.run(debug=True, host='0.0.0.0', port=5000)
+if __name__ == '__main__':
+    app.run(debug=True, host='0.0.0.0', port=8000)
