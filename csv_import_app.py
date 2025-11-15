@@ -12,15 +12,26 @@ app = Flask(__name__)
 # BASE_FILE_PATH = '/app/config/base_file_a.csv'
 
 # デプロイ用
-BASE_FILE_PATH = 'config/base_file_a.csv'
+BASE_FILE_PATH = 'data/base_file_a.csv' 
 
-# 基準となるDataFrameと列リストをグローバルに保持
+# 基準となるDataFrameをグローバルに保持
 try:
-    # 基準ファイルAを読み込み、列情報のみを取得
-    df_base = pd.read_csv(BASE_FILE_PATH, encoding='utf-8-sig')
+    # 基準ファイルAを読み込み、全データを取得
+    df_base = pd.read_csv(BASE_FILE_PATH) 
+    
     print(f"基準ファイルA ({BASE_FILE_PATH}) を正常に読み込みました。")
+    print(f"基準データには {len(df_base.columns)} 個の列があります。")
+
+except FileNotFoundError:
+    # 起動時にファイルが見つからない場合は致命的なエラーとする
+    print(f"致命的エラー: 基準ファイル'{BASE_FILE_PATH}'が見つかりません。")
+    # アプリケーションの起動を停止
+    import sys
+    sys.exit(1) 
 except Exception as e:
-    print(f"基準ファイルの読み込み中に予期せぬエラーが発生しました: {e}")
+    # ファイルが空などの予期せぬエラー
+    print(f"致命的エラー: 基準ファイルの読み込み中に予期せぬエラーが発生しました: {e}")
+    sys.exit(1)
 
 
 @app.route('/')
