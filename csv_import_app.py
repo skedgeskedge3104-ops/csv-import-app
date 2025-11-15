@@ -12,7 +12,7 @@ app = Flask(__name__)
 # BASE_FILE_PATH = '/app/config/base_file_a.csv'
 
 # デプロイ用
-BASE_FILE_PATH = 'data/base_file_a.csv'
+BASE_FILE_PATH = 'config/base_file_a.csv'
 
 # 基準となるDataFrameと列リストをグローバルに保持
 try:
