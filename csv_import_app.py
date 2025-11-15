@@ -8,22 +8,15 @@ app = Flask(__name__)
 # ★ Cドライブから基準ファイルAを読み込むパスを設定 ★
 # WSLの/mnt/c/temp_data/base_file_a.csv にアクセスします。
 # このファイルは、アプリ起動時に読み込まれ、整形処理の基準となります。
-BASE_FILE_PATH = '/app/config/base_file_a.csv'
+BASE_FILE_PATH = 'data/base_file_a.csv'
 
 # 基準となるDataFrameと列リストをグローバルに保持
 try:
     # 基準ファイルAを読み込み、列情報のみを取得
-    df_base = pd.read_csv(BASE_FILE_PATH, nrows=0) 
-    BASE_COLUMNS = df_base.columns.tolist()
+    df_base = pd.read_csv(BASE_FILE_PATH)
     print(f"基準ファイルA ({BASE_FILE_PATH}) を正常に読み込みました。")
-    print(f"基準列: {BASE_COLUMNS}")
-except FileNotFoundError:
-    # ファイルが見つからない場合は、仮の列リストを設定 (デバッグ用)
-    BASE_COLUMNS = ['ID', 'Name', 'Value', 'Date'] 
-    print(f"警告: 基準ファイル'{BASE_FILE_PATH}'が見つかりません。ダミーの列を使用します。")
 except Exception as e:
     print(f"基準ファイルの読み込み中に予期せぬエラーが発生しました: {e}")
-    BASE_COLUMNS = ['ID', 'Name', 'Value', 'Date'] 
 
 
 @app.route('/')

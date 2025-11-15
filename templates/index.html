@@ -2,7 +2,7 @@
 <html lang="ja">
 <head>
     <meta charset="utf-8">
-    <title>ファイルインポート＆整形</title>
+    <title>PAPIMO用ｃｓｖ作成</title>
     <style>
         body { font-family: Arial, sans-serif; margin: 50px; }
         .container { max-width: 600px; margin: auto; padding: 20px; border: 1px solid #ccc; border-radius: 8px; }
@@ -25,15 +25,15 @@
 <body>
     <div class="container">
         <h1>📊 ファイルインポートと整形</h1>
-        <p>アップロードされたデータ (ファイルB) を、基準ファイルAの形式に合わせて整形します。</p>
+        <p>出入り番頭より取得した「変更後台情報」をアップロードしてください。PAPIMO用のｃｓｖファイルに変換します</p>
         <hr>
         
         <form method="post" enctype="multipart/form-data" action="{{ url_for('upload_file') }}">
-            <h2>ファイルBを選択</h2>
+            <h2>変更後台情報のアップロード</h2>
             <p>
                  <input type="file" name="file" accept=".csv, .xlsx, .xls" required>
             </p>
-            <input type="submit" value="アップロードして整形・ダウンロード">
+            <input type="submit" value="ダウンロード">
         </form>
     </div>
 </body>

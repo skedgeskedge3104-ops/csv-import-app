@@ -17,7 +17,7 @@ services:
     # 本番環境ではこの行は削除することが多いです
     volumes:
       - .:/app
-      - "/mnt/c/temp_data/base_file_a.csv:/app/config/base_file_a.csv"
+      # - "/mnt/c/temp_data/base_file_a.csv:/app/config/base_file_a.csv"
       
     # 環境変数 (デバッグモードの設定など)
     environment:
